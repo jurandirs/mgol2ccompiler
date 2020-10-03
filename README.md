@@ -9,7 +9,7 @@ Compilador que transforma um código fonte escrito na linguagem Mgol para um arq
 | :---: | :--- | --- | --- |
 | ✔ | Reunião de planejamento |`in progress`| Jurandir|
 | ✔ | Reunião de planejamento |`in progress`| Jorge Lucas|
-| ❌ | | |
+| ❌ | Desenvolver a tabela de tokens |`in progress`| Jorge Lucas|
 | ❌ | | | |
 | ❌ | | | |
 | ❌ | | | |
