@@ -4,8 +4,9 @@ import csv
 import sys
 import pprint
 
-# Function to write the diferents id's;
+#class Dicionario:
 
+# Function to write the diferents id's;
 def csv_write(file, token, lexema, tipo):
      
     fieldnames = ["token", "lexema", "tipo"]
@@ -14,15 +15,12 @@ def csv_write(file, token, lexema, tipo):
     writer.writeheader()
     writer.writerow([token, lexema, tipo])
  
-def csv_dict_list(variables_file):
+#return the token definition whith lexema, token and type
+def token_definition(list1, list2, token, lexema, tipo):
      
-    # Open variable-based csv, iterate over the rows and map values to a list of dictionaries containing key/value pairs
- 
-    reader = csv.DictReader(open(variables_file, 'rb'))
-    dict_list = []
-    for line in reader:
-        dict_list.append(line)
-    return dict_list
+    
+
+    return 1
 
 # Function to convert a csv file to a list of dictionaries.  Takes in one variable called &quot;variables_file&quot;
  
