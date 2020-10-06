@@ -1,4 +1,4 @@
-estado,tokken,proximo
+state,token,next
 s0,“\t”,s0
 s0,“ ”,s0
 s0,“\n”,s0
