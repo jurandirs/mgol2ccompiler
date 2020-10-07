@@ -2,6 +2,20 @@ from dfa import DFA
 from symbol_table import SymbolTable
 
 class Lexical:
+
+    Erros_lexicos = {
+        's1': 'Constante numerica invalida!',
+        's2': 'Constante numerica invalida!',
+        's3': 'Constante numerica invalida!',
+        's4': 'Constante numerica invalida!',
+        's5': 'Constante numerica invalida!',
+        's6': 'Constante numerica invalida!',
+        's7': 'Literal nao terminado!',
+        's8': 'Literal nao terminado!',
+        's11': 'Comentario nao terminado!',
+        's12': 'Comentario nao terminado!'
+    }
+
     __slots__ = ['dfa']
     def __init__(self, dfa:DFA, chain:str, symbols_table_file: str):
         if not isinstance(dfa, DFA):
