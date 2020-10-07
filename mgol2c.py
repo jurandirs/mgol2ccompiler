@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 import argparse
-from scanners.dfa import DFA
-from symbol_table import SymbolTable
+from scanners.dfa import load_dfa
+from scanners.mgollexical import Lexical
+
+# def read_mgol_code(file_name):
+#     codeinlist = [[]]
+#     with open(file_name,'r') as F:
+#         code = F.read()
+#         code = mgol_replaces(code)
+#         return [line.split() for line in code.split('\n')]
 
 def read_mgol_code(file_name):
-    codeinlist = [[]]
     with open(file_name,'r') as F:
         code = F.read()
-        code = mgol_replaces(code)
-        return [line.split() for line in code.split('\n')]
+        return code
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Projeto de compilador que converte código em linguagem Mgol em arquivo objeto em C.")
@@ -16,8 +21,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     mgol_code = read_mgol_code(args.source)
-    print(*mgol_code,sep="\n")
+    
+    dfa = load_dfa(transitions_file="tables/tab_transitions.csv", accept_states_file="tables/tab_final_states.csv")
+    lexical = Lexical(dfa=dfa, chain=mgol_code, symbols_table_file='tables/tab_symbol_table')
 
-    symbol_table = 
+    for lexeme in lexical.get_lexeme():
+        print(lexeme)
+    
 
 
