@@ -1,5 +1,8 @@
 import numpy as np
 from scanners.reader import read_csv
+import string
+
+alphabet_ascii = set(string.ascii_letters + string.digits)
 
 ANY = "_ANY_"
 
@@ -14,7 +17,7 @@ def load_dfa(transitions_file, accept_states_file, alphabet=None, states=None, s
         if t[1] == '[A-z0-9]': t[1] = ANY
 
 
-    alphabet = set(list(zip(*transitions))[1])
+    alphabet = set(list(zip(*transitions))[1]).union(alphabet_ascii)
     states = set(list(zip(*transitions))[0] + list(zip(*transitions))[2])
     accept_states = set(list(zip(*accept_states))[0])
 
@@ -49,7 +52,7 @@ class DFA:
         self.START_STATE =   None
         self.δ =             None
         self.ACCEPT_STATES = None
-        self.CURRENT_STATE = None
+        self.CURRENT_STATE = start
         self.set_alphabet(alphabet=alphabet)
         self.set_states(states=states)
         self.set_start_accept(start=start, accept=accept)
@@ -116,6 +119,12 @@ class DFA:
                                                      for symbol in self.Σ}
 
         for s1, symbol, s2 in transitions:
+            if symbol == 'L':
+                for l in string.ascii_letters:
+                    transition_dict[(s1, l)] = s2
+            elif symbol == 'D':
+                for d in string.digits:
+                    transition_dict[(s1, d)] = s2
             transition_dict[(s1, symbol)] = s2
         
         self.δ = transition_dict
@@ -128,6 +137,7 @@ class DFA:
         self.CURRENT_STATE = self.δ[self.CURRENT_STATE, input_symbol]
         if self.CURRENT_STATE == 'REJECT' and (self.CURRENT_STATE, ANY) in self.δ:
             self.CURRENT_STATE = self.δ[self.CURRENT_STATE, ANY]
+        
         return {'current': self.CURRENT_STATE, 'previous': previous_state}
 
     def check_if_accept(self):

@@ -24,7 +24,7 @@ def token_definition(list1, list2, token, lexema, tipo):
 
 def csv_dict_list(file_name, class_name="Data"):
     # Function to convert a csv file to a list of dictionaries.
-    with open(file, 'r') as F:
+    with open(file_name, 'r') as F:
         reader = csv.reader(F)
         fields = next(reader)
         Data = namedtuple(class_name, fields)

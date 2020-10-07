@@ -18,7 +18,14 @@ lexical_errors = {
     }
 
 class Lexical:
-    __slots__ = ['dfa']
+    __slots__ = ['dfa',
+                 'chain',
+                 'current_position',
+                 'current_line',
+                 'current_column',
+                 'symbols_table',
+                 'memory']
+
     def __init__(self, dfa:DFA, chain:str, symbols_table_file: str):
         if not isinstance(dfa, DFA):
             raise TypeError('dfa argument must be DFA type.')
@@ -32,7 +39,7 @@ class Lexical:
         self.symbols_table = self.load_symbols(symbols_table_file)
         self.memory = ''
 
-    def update_relative_position():
+    def update_relative_position(self):
         self.current_column += 1
         if self.chain[self.current_position] == '\n':
             self.current_line += 1
@@ -42,15 +49,16 @@ class Lexical:
         return SymbolTable(reserved_kw=symbols_table_file)
 
     def go_forward(self):
-        """Função que avança na cadeia após um erro for encontrado"""
+        """Função que avança na cadeia"""
         while self.chain[self.current_position] not in alphabet_ascii or self.chain[self.current_position] in string.whitespace:
             self.memory += self.chain[self.current_position]
             self.current_position += 1
             self.update_relative_position()
+            
 
     def get_lexeme(self):
         while self.current_position < len(self.chain):
-            symbol = chain[self.current_position]
+            symbol = self.chain[self.current_position]
             self.memory += symbol
 
             running = self.dfa.run_state_transition(symbol)
@@ -59,16 +67,25 @@ class Lexical:
 
             if previous_state is not 'REJECT' and current_state is 'REJECT':
                 if previous_state in self.dfa.ACCEPT_STATES:
+                    # print(">>>"+self.chain[self.current_position])
+                    # print(current_state)
+                    # print(previous_state)
+                    if len(self.memory) > 1:
+                        tmp_symbol = self.memory[0:-1]
+                    # self.current_position -= 1
                     self.go_forward()
                     self.dfa.reset()
                     self.memory = ''
-                    yield self.symbols_table.get_symbol(self.memory)
+                    yield self.symbols_table.get_symbol(symbol=tmp_symbol, state=current_state)
                 else:
                     message_error = 'Error: {} (line: {}, column: {})'.format(lexical_errors[previous_state], self.current_line, self.current_column)
                     self.go_forward()
                     self.dfa.reset()
                     yield message_error
-            self.current_position += 1
+                if current_state == self.dfa.START_STATE:
+                    self.current_position -= 1
+            if not self.memory == '':
+                self.current_position += 1
             self.update_relative_position
             
         else:

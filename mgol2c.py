@@ -23,8 +23,9 @@ if __name__ == "__main__":
     mgol_code = read_mgol_code(args.source)
     
     dfa = load_dfa(transitions_file="tables/tab_transitions.csv", accept_states_file="tables/tab_final_states.csv")
-    lexical = Lexical(dfa=dfa, chain=mgol_code, symbols_table_file='tables/tab_symbol_table')
+    lexical = Lexical(dfa=dfa, chain=mgol_code, symbols_table_file='tables/tab_symbols.csv')
 
+    print("Lexemas")
     for lexeme in lexical.get_lexeme():
         print(lexeme)
     
