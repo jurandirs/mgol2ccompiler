@@ -1,12 +1,10 @@
-from dfa import DFA
-from symbol_table import SymbolTable
+from scanners.dfa import DFA
+from scanners.symbol_table import SymbolTable
 import string 
 
 alphabet_ascii = set(string.ascii_letters + string.digits)
 
-class Lexical:
-
-    Erros_lexicos = {
+lexical_errors = {
         's1': 'Constante numerica invalida!',
         's2': 'Constante numerica invalida!',
         's3': 'Constante numerica invalida!',
@@ -19,6 +17,7 @@ class Lexical:
         's12': 'Comentario nao terminado!'
     }
 
+class Lexical:
     __slots__ = ['dfa']
     def __init__(self, dfa:DFA, chain:str, symbols_table_file: str):
         if not isinstance(dfa, DFA):
@@ -59,3 +58,18 @@ class Lexical:
             previous_state = running['previous'] # Usado para identificar o erro
 
             if previous_state is not 'REJECT' and current_state is 'REJECT':
+                if previous_state in self.dfa.ACCEPT_STATES:
+                    self.go_forward()
+                    self.dfa.reset()
+                    self.memory = ''
+                    yield self.symbols_table.get_symbol(self.memory)
+                else:
+                    message_error = 'Error: {} (line: {}, column: {})'.format(lexical_errors[previous_state], self.current_line, self.current_column)
+                    self.go_forward()
+                    self.dfa.reset()
+                    yield message_error
+            self.current_position += 1
+            self.update_relative_position
+            
+        else:
+            print("FIN") 

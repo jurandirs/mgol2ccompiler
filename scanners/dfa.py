@@ -1,9 +1,9 @@
 import numpy as np
-from reader import read_csv
+from scanners.reader import read_csv
 
 ANY = "_ANY_"
 
-def load_dfa(alphabet=None, states=None, start='s0', transitions_file,accept_states_file):
+def load_dfa(transitions_file, accept_states_file, alphabet=None, states=None, start='s0'):
     fields, transitions = read_csv(transitions_file)
     fields, accept_states = read_csv(accept_states_file)
 
@@ -12,9 +12,10 @@ def load_dfa(alphabet=None, states=None, start='s0', transitions_file,accept_sta
         if t[1] == '\\n': t[1] = '\n'
         if t[1] == '\\.': t[1] = '.'
         if t[1] == '[A-z0-9]': t[1] = ANY
-    
-    alphabet = set(list(zip(*transitions_file))[1])
-    states = set(list(zip(*transitions_file))[0] + list(zip(*transitions_file))[2])
+
+
+    alphabet = set(list(zip(*transitions))[1])
+    states = set(list(zip(*transitions))[0] + list(zip(*transitions))[2])
     accept_states = set(list(zip(*accept_states))[0])
 
     D = DFA(alphabet=alphabet,
@@ -66,6 +67,9 @@ class DFA:
         if not start in self.S:
             raise ValueError("{} is not in S set (of states).".format(start))
         if not set(accept).issubset(self.S):
+            print(accept)
+            print(self.S)
+            print(set(accept).difference(self.S))
             raise ValueError("The set/list 'accept' is not a subset of S set (of states).")
         
         self.START_STATE = start
