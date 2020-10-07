@@ -1,4 +1,29 @@
 import numpy as np
+from reader import read_csv
+
+ANY = "_ANY_"
+
+def load_dfa(alphabet=None, states=None, start='s0', transitions_file,accept_states_file):
+    fields, transitions = read_csv(transitions_file)
+    fields, accept_states = read_csv(accept_states_file)
+
+    for t in transitions:
+        if t[1] == '\\t': t[1] = '\t'
+        if t[1] == '\\n': t[1] = '\n'
+        if t[1] == '\\.': t[1] = '.'
+        if t[1] == '[A-z0-9]': t[1] = ANY
+    
+    alphabet = set(list(zip(*transitions_file))[1])
+    states = set(list(zip(*transitions_file))[0] + list(zip(*transitions_file))[2])
+    accept_states = set(list(zip(*accept_states))[0])
+
+    D = DFA(alphabet=alphabet,
+            states=states,
+            start=start,
+            transitions=transitions,
+            accept=accept_states)
+
+    return D
 
 class DFA:
     """Deterministic Finite Automata"""
@@ -17,7 +42,7 @@ class DFA:
     # δ = transition function: "δ : S × Σ -> S"
     # F = set of final (or accepting) states
     
-    def __init__(self, alphabet: list, states: list, start: str, transitions: list, accept:list) -> DFA:
+    def __init__(self, alphabet: set, states: set, start: str, transitions: list, accept:set):
         self.Σ =             None
         self.S =             None
         self.START_STATE =   None
@@ -82,17 +107,24 @@ class DFA:
             raise TypeError("All elements in 2nd positions in each transitions must belong to the Σ set (of alphabet).")
         del S1, SIGMA, S2
 
+        # Garantir DFA completo
         transition_dict = {(state, symbol): "REJECT" for state in self.S
                                                      for symbol in self.Σ}
+
+        for s1, symbol, s2 in transitions:
+            transition_dict[(s1, symbol)] = s2
         
         self.δ = transition_dict
         return True
 
     def run_state_transition(self, input_symbol: str) -> str:
+        previous_state = self.CURRENT_STATE
         if self.CURRENT_STATE == "REJECT":  # Um Estado apenas para rejeição, não quer dizer que seja um estado que não é de aceitação
             return False
         self.CURRENT_STATE = self.δ[self.CURRENT_STATE, input_symbol]
-        return self.CURRENT_STATE
+        if self.CURRENT_STATE == 'REJECT' and (self.CURRENT_STATE, ANY) in self.δ:
+            self.CURRENT_STATE = self.δ[self.CURRENT_STATE, ANY]
+        return {'current': self.CURRENT_STATE, 'previous': previous_state}
 
     def check_if_accept(self):
         return True if self.CURRENT_STATE in self.ACCEPT_STATES else False
@@ -104,7 +136,7 @@ class DFA:
         self.reset()
 
         for symbol in in_string:
-            check = self.run_state_transition(symbol)
+            check = self.run_state_transition(symbol)['current']
             if check == "REJECT":
                 return False
         

@@ -35,5 +35,5 @@ def read_csv(file_name):
     with open(file_name)as F:
         reader = csv.reader(F)
         fields = next(reader)
-        rows = [tuple(line) for line in reader]
+        rows = [line for line in reader]
     return fields, rows
