@@ -46,7 +46,7 @@ class SLR:
                 symbol = next(self.scanner.get_lexeme())['symbol'].lexeme
                 if symbol in sync_tokens:
                     break
-        return "Error {} (linha: {}, coluna: {}) : {}".format(error_code,
+        return "Syntatic Error {} (linha: {}, coluna: {}) : {}".format(error_code,
                                                             line,
                                                             column, 
                                                             self.action[current_state, error_code])
@@ -59,7 +59,15 @@ class SLR:
             #     a = ip.token  # porque na tabela os identificadores são identificados por "id" (o token)
             # else:
             #     a = ip.lexeme
-            a = ip['symbol'].token if (s, ip['symbol'].token) in self.action else ip['symbol'].lexeme
+            try:
+                a = ip['symbol'].token if (s, ip['symbol'].token) in self.action else ip['symbol'].lexeme
+            except TypeError:
+                print(ip)
+                try:
+                    ip = next(self.scanner.get_lexeme())  # avançar ip para o próximo símbolo da entrada;
+                    continue
+                except:
+                    break
             if self.action[s, a] == "shift":
                 ss = self.action[s, a, "shift"]
                 self.stack.append(a)  # empilhar a e em seguida s' (ss) no topo da pilha;

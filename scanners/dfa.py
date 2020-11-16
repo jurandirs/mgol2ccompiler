@@ -4,6 +4,7 @@ import string
 
 alphabet_ascii = set(string.ascii_letters + string.digits)
 alphabet_ascii.add('$')
+alphabet_ascii.add('@')
 
 ANY = "_ANY_"
 
@@ -104,7 +105,7 @@ class DFA:
         if not all(isinstance(t, (list, tuple)) for t in transitions):
             raise TypeError("All transitions in 'transitions' argument must be list or tuple type")
         if not all(isinstance(x, str) for x in np.concatenate(transitions)):
-            raise TypeError("All elements in each transition must be str type.")
+            raise TypeError("All elements in each transition mustalphabet_ascii.add('$') be str type.")
         
         S1, SIGMA, S2 = list(zip(*transitions))
         if not set(S1).issubset(self.S) or not set(S2).issubset(self.S):

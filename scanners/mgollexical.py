@@ -15,8 +15,10 @@ alphabet_ascii.add(')')
 alphabet_ascii.add('"')
 alphabet_ascii.add(',')
 alphabet_ascii.add('$')
+alphabet_ascii.add('@')
 
 lexical_errors = {
+        's0': 'Caracter inválido',
         's1': 'Constante numerica invalida!',
         's2': 'Constante numerica invalida!',
         's3': 'Constante numerica invalida!',
@@ -104,8 +106,9 @@ class Lexical:
                     }
                     yield tmp
                 else:
-                    message_error = '   Error: {} (line: {}, column: {})'.format(lexical_errors[previous_state], self.current_line+1, self.current_column-2)
+                    message_error = '   Lexical Error: {} (line: {}, column: {})'.format(lexical_errors[previous_state], self.current_line+1, self.current_column-2)
                     self.go_forward()
+                    self.current_position += 1
                     self.dfa.reset()
                     yield message_error
                 if current_state == self.dfa.START_STATE:
