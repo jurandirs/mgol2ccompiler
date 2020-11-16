@@ -12,3 +12,17 @@ inteiro,inteiro,inteiro
 real,real,real
 literal,literal,lit
 lit,lit,lit
+;,PT_V,
+),FC_P,
+(,AB_P,
++,OPM,
+-,OPM,
+*,OPM,
+/,OPM,
+<-,RCB,
+<,OPR,
+>,OPR,
+>=,OPR,
+<=,OPR,
+=,OPR,
+<>,OPR,

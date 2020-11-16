@@ -2,6 +2,7 @@
 import argparse
 from scanners.dfa import load_dfa
 from scanners.mgollexical import Lexical
+from parsers .slr import SLR
 
 # def read_mgol_code(file_name):
 #     codeinlist = [[]]
@@ -15,19 +16,31 @@ def read_mgol_code(file_name):
         code = F.read()
         return code
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Projeto de compilador que converte código em linguagem Mgol em arquivo objeto em C.")
-    parser.add_argument("--source", type=str, help="the path to source file with Mgol code.")
-    args = parser.parse_args()
-
-    mgol_code = read_mgol_code(args.source)
-    
+def t1():
     dfa = load_dfa(transitions_file="tables/tab_transitions.csv", accept_states_file="tables/tab_final_states.csv")
     lexical = Lexical(dfa=dfa, chain=mgol_code, symbols_table_file='tables/tab_symbols.csv')
 
     print("Lexemas")
     for lexeme in lexical.get_lexeme():
         print(lexeme)
+
+def t2():
+    dfa = load_dfa(transitions_file="tables/tab_transitions.csv", accept_states_file="tables/tab_final_states.csv")
+    lexical = Lexical(dfa=dfa, chain=mgol_code, symbols_table_file='tables/tab_symbols.csv')
+
+    syntactic = SLR(scanner=lexical)
+
+    syntactic.run_slr()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Projeto de compilador que converte código em linguagem Mgol em arquivo objeto em C.")
+    parser.add_argument("--source", type=str, help="the path to source file with Mgol code.")
+    args = parser.parse_args()
+
+    mgol_code = read_mgol_code(args.source)
+    mgol_code += "$"
+    
+    t2()
     
 
 

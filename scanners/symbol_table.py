@@ -32,13 +32,13 @@ class SymbolTable:
         elif symbol in self.ids:
             return self.ids[symbol]
         else:
-            return self.new_symbol(symbol)
+            return self.new_symbol(symbol, state)
     
     def new_symbol(self, symbol, state=None):
         if state in self.tokens:
             token = self.tokens[state]
         else:
-            token = ''
+            token = 'id'
         
         self.ids[symbol] = ID(lexeme=symbol, token=token, type='')
         return self.ids[symbol]
