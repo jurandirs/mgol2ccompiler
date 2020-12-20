@@ -2,7 +2,6 @@
 import csv
 import sys
 import pprint
-from collections import namedtuple
 
 #class Dicionario:
 
@@ -21,14 +20,14 @@ def csv_write(file, token, lexema, tipo):
 def token_definition(list1, list2, token, lexema, tipo):
     return 1
 
-
+# Função que lê um arquivo CSV e organiza cada linha como um dicionário
+# class_name poderá ser Reserved, ID, ou Data (denotando qualquer coisa, caso seja preciso)
 def csv_dict_list(file_name, class_name="Data"):
     # Function to convert a csv file to a list of dictionaries.
     with open(file_name, 'r') as F:
         reader = csv.reader(F)
         fields = next(reader)
-        Data = namedtuple(class_name, fields)
-        data_list = [Data(*r) for r in reader]
+        data_list = [dict(list(zip(fields,r))+[('Class',class_name)]) for r in reader]
     return data_list
 
 def read_csv(file_name):

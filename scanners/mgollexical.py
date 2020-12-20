@@ -16,6 +16,9 @@ alphabet_ascii.add('"')
 alphabet_ascii.add(',')
 alphabet_ascii.add('$')
 alphabet_ascii.add('@')
+alphabet_ascii.add('?')
+alphabet_ascii.add('#')
+alphabet_ascii.add('!')
 
 lexical_errors = {
         's0': 'Caracter inválido',
@@ -100,10 +103,8 @@ class Lexical:
                     self.go_forward()
                     self.dfa.reset()
                     self.memory = ''
-                    tmp = {
-                            'symbol': self.symbols_table.get_symbol(symbol=tmp_symbol, state=current_state),
-                            'position': {'line':self.current_line, 'column': self.current_column}
-                    }
+                    tmp = self.symbols_table.get_symbol(symbol=tmp_symbol, state=current_state)
+                    tmp.update({'line':self.current_line, 'column': self.current_column})
                     yield tmp
                 else:
                     message_error = '   Lexical Error: {} (line: {}, column: {})'.format(lexical_errors[previous_state], self.current_line+1, self.current_column-2)
@@ -115,10 +116,8 @@ class Lexical:
                     self.current_position -= 1
             elif self.current_position == len(self.chain)-1 and symbol == '$': 
                 self.stop = True
-                tmp = {
-                            'symbol': self.symbols_table.get_symbol(symbol=symbol, state=current_state),
-                            'position': {'line':self.current_line, 'column': self.current_column}
-                    }
+                tmp = self.symbols_table.get_symbol(symbol=symbol, state=current_state)
+                tmp.update({'line':self.current_line, 'column': self.current_column})
                 yield tmp
             if not self.memory == '':
                 self.current_position += 1

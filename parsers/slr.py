@@ -2,6 +2,7 @@ from scanners.mgollexical import Lexical
 from scanners.reader import read_csv
 from parsers.mgolgrammar import mgolgrammar
 from parsers.mgolgrammar import sync_tokens
+from semantic.semantic import Semantic
 
 
 
@@ -43,7 +44,7 @@ class SLR:
             pass
         else:
             while True:
-                symbol = next(self.scanner.get_lexeme())['symbol'].lexeme
+                symbol = next(self.scanner.get_lexeme())["lexeme"]
                 if symbol in sync_tokens:
                     break
         return "Syntatic Error {} (linha: {}, coluna: {}) : {}".format(error_code,
@@ -51,8 +52,11 @@ class SLR:
                                                             column, 
                                                             self.action[current_state, error_code])
     def run_slr(self):
-        stop = None
+        syntactic_error = False
+        semantic = Semantic(self.scanner.symbols_table)
+        semantic.init_stack()
         ip = next(self.scanner.get_lexeme())  # Fazer ip apontar para o primeiro símbolo w$;
+        ip = semantic.set_type(ip)
         while True:  # repetir para sempre início
             s = self.stack[-1]  # seja s o estado ao topo da pilha e
             # if ip.token == "id":  # a o símbolo apontado por ip;
@@ -60,7 +64,7 @@ class SLR:
             # else:
             #     a = ip.lexeme
             try:
-                a = ip['symbol'].token if (s, ip['symbol'].token) in self.action else ip['symbol'].lexeme
+                a = ip["token"] if (s, ip["token"]) in self.action else ip["lexeme"]
             except TypeError:
                 print(ip)
                 try:
@@ -72,30 +76,49 @@ class SLR:
                 ss = self.action[s, a, "shift"]
                 self.stack.append(a)  # empilhar a e em seguida s' (ss) no topo da pilha;
                 self.stack.append(ss)
+                semantic.aux_stack.append(ip)
                 try:
                     ip = next(self.scanner.get_lexeme())  # avançar ip para o próximo símbolo da entrada;
                 except:
                     break
             elif self.action[s, a] == "reduce":
                 prod_index = self.action[s, a, "reduce"]
-                A = mgolgrammar[prod_index].left
-                β = mgolgrammar[prod_index].right
+                A = mgolgrammar[prod_index]["left"]
+                β = mgolgrammar[prod_index]["right"]
                 for i in range(0, 2*len(β)):  # desempilhar 2*|β | símbolos para fora da pilha;
                     self.stack.pop()
                 ss = self.stack[-1]  # seja s' (ss) o estado agora ao topo da pilha;
                 # ss = s  # seja s' (ss) o estado agora ao topo da pilha;
                 self.stack.append(A)  # empilhar A e em seguida desvio[s',A];
                 self.stack.append(self.goto[ss, A])
-                print('{} -> {}'.format(A,' '.join(β)))  # escrever a produção A -> β na tela;
+
+                validation = []
+                for i in range(0, len(β)):
+                    aux = semantic.aux_stack.pop()
+                    validation.append(aux)
+                
+                non_terminal = semantic.run(prod_index=prod_index, 
+                                            Alpha=A, 
+                                            validation=validation, 
+                                            syntactic_error=syntactic_error)
+
+
+                semantic.aux_stack.append(non_terminal)
+                # print('{} -> {}'.format(A,' '.join(β)))  # escrever a produção A -> β na tela;
             elif self.action[s, a] == "acc":
+                if not syntactic_error:
+                    print("Gerando PROGRAMA.c ...")
+                    semantic.write_code()
                 return True
             elif str(self.action[s, a]).isdigit():
+                syntactic_error = True
                 error = self.panic_error(error_code=self.action[s, a], 
                                         current_symbol=a, 
                                         current_state=s, 
-                                        line=ip['position']['line'],
-                                        column=ip['position']['column'])
+                                        line=ip['line']+1,
+                                        column=ip['column'])
                 print(error)
+                break
                 try:
                     ip = next(self.scanner.get_lexeme())  # avançar ip para o próximo símbolo da entrada;
                 except:

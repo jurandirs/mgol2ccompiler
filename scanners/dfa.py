@@ -5,6 +5,9 @@ import string
 alphabet_ascii = set(string.ascii_letters + string.digits)
 alphabet_ascii.add('$')
 alphabet_ascii.add('@')
+alphabet_ascii.add('?')
+alphabet_ascii.add('#')
+alphabet_ascii.add('!')
 
 ANY = "_ANY_"
 

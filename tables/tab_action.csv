@@ -55,7 +55,7 @@ s22,;,s40,shift
 s23,;,s41,shift
 s24,;,12,reduce
 s25,;,13,reduce
-s26,;,14,reduce
+s26,;,12,reduce
 s27,id,s44,shift
 s27,num,s45,shift
 s28,id,22,reduce
@@ -118,7 +118,7 @@ s43,;,18,reduce
 s43,OPM,s53,shift
 s44,;,19,reduce
 s44,OPM,19,reduce
-s44,),19,reduce
+s44,),20,reduce
 s44,OPR,19,reduce
 s45,;,20,reduce
 s45,OPM,20,reduce

@@ -1,9 +1,7 @@
 from scanners.reader import csv_dict_list
 from scanners.reader import read_csv
 from io import TextIOBase as FileType
-from collections import namedtuple
 
-ID = namedtuple('ID', ['lexeme', 'token', 'type'])
 
 class SymbolTable:
     __slots__ = ["reserved_kw", "ids", 'tokens']
@@ -24,7 +22,7 @@ class SymbolTable:
     def load_reserved_kw(self, filename):
         reserd_kw_list = csv_dict_list(filename, 'Reserved')
         for r in reserd_kw_list:
-            self.reserved_kw[r.lexeme] = r
+            self.reserved_kw[r["lexeme"]] = r
 
     def get_symbol(self, symbol:str, state):
         if symbol in self.reserved_kw:
@@ -39,6 +37,15 @@ class SymbolTable:
             token = self.tokens[state]
         else:
             token = 'id'
+        _type = ''
+        if str.isdigit(symbol):
+            _type = 'inteiro'
+        else:
+            try:
+                tmp = float(symbol)
+                _type = 'real'
+            except:
+                pass
         
-        self.ids[symbol] = ID(lexeme=symbol, token=token, type='')
+        self.ids[symbol] = {"lexeme":symbol, "token":token, "type":_type,"Class":"ID"}
         return self.ids[symbol]
