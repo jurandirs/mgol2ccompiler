@@ -110,31 +110,36 @@ class Semantic:
 
         # P -> P 
         def rule0(**kwargs):
+            print("(semântico) -")
             
             return kwargs['Alpha']
         self.semantic_rules["0"] = rule0
 
         # P -> inicio V A
         def rule1(**kwargs):
-            
+            print("(semântico) -")
+
             return kwargs['Alpha']
         self.semantic_rules["1"] = rule1
 
         # V -> varinicio LV
         def rule2(**kwargs):
-            
+            print("(semântico) -")
+
             return kwargs['Alpha']
         self.semantic_rules["2"] = rule2
 
         # LV -> D LV
         def rule3(**kwargs):
-            
+            print("(semântico) -")
+
             return kwargs['Alpha']
         self.semantic_rules["3"] = rule3
 
         # LV -> varfim;
         # Imprimir três linhas brancas no arquivo objeto
         def rule4(**kwargs):
+            print("(semântico) Imprimir três linhas brancas no arquivo objeto;")
             self.code_insert('\n\n\n', indent=True)
             
             return kwargs['Alpha']
@@ -142,6 +147,8 @@ class Semantic:
 
         # D -> id TIPO;
         def rule5(**kwargs):
+            print("(semântico) id.tipo <- TIPO.tipo")
+            print("(semântico) Imprimir ( TIPO.tipo id.lexema ; )")
             id = kwargs["validation"].pop()
             TIPO = kwargs["validation"].pop()
             PT_V = kwargs["validation"].pop() # ponto_critico
@@ -157,6 +164,7 @@ class Semantic:
 
         # TIPO -> inteiro
         def rule6(**kwargs):
+            print("(semântico) TIPO.tipo <- inteiro.tipo")
             inteiro = kwargs['validation'].pop()
             kwargs['Alpha']["type"] = inteiro["type"]
             
@@ -165,6 +173,7 @@ class Semantic:
 
         # TIPO -> real
         def rule7(**kwargs):
+            print("(semântico) TIPO.tipo <- real.tipo")
             real = kwargs['validation'].pop()
             kwargs['Alpha']["type"] = real["type"]
             
@@ -173,6 +182,7 @@ class Semantic:
 
         # TIPO -> literal
         def rule8(**kwargs):
+            print("(semântico) TIPO.tipo <- literal.tipo")
             literal = kwargs['validation'].pop()
             kwargs['Alpha']["type"] = literal["type"]
             
@@ -181,7 +191,7 @@ class Semantic:
 
         # A -> ES A 
         def rule9(**kwargs):
-            
+            print("(semântico) -")
             return kwargs['Alpha']
         self.semantic_rules["9"] = rule9
 
@@ -193,14 +203,17 @@ class Semantic:
             id = kwargs["validation"].pop()
             PT_V = kwargs["validation"].pop() # ponto_critico
             if id["type"] == "literal":
+                print("(semântico) Imprimir ( scanf(“%s”, id.lexema); )")
                 self.code_insert("scanf(\"%s\", " + id["lexeme"] + ");", indent=True)
                 
                 return kwargs["Alpha"]
             elif id["type"] == "inteiro":
+                print("(semântico) Imprimir ( scanf(“%d”, &id.lexema); )")
                 self.code_insert("scanf(\"%d\", &" + id["lexeme"] + ");", indent=True)
                 
                 return kwargs["Alpha"]
             elif id["type"] == "real":
+                print("(semântico) Imprimir ( scanf(“%lf”, &id.lexema); )")
                 self.code_insert("scanf(\"%lf\", &" + id["lexeme"] + ");", indent=True)
                 
                 return kwargs["Alpha"]
@@ -212,6 +225,7 @@ class Semantic:
         # ES -> escreva ARG;
         # Gerar código para o comando escreva no arquivo objeto
         def rule11(**kwargs):
+            print("(semântico) Imprimir ( printf(“ARG.lexema”); )")
             escreva = kwargs["validation"].pop()
             ARG = kwargs["validation"].pop()
             PT_V = kwargs["validation"].pop() # ponto_critico
@@ -234,6 +248,7 @@ class Semantic:
         # ARG -> literal
         # Copiar todos os atributos de literal para os atributos de ARG
         def rule1213(**kwargs):
+            print("(semântico) ARG.atributos <- {literal,num}.atributos")
             literal = kwargs['validation'].pop()
             kwargs['Alpha'] = copy(literal)
             
@@ -247,6 +262,7 @@ class Semantic:
 
             # Verificar se o identificador foi declarado (execução da regra semântica de número 6).
             if id["type"] is not "":
+                print("(semântico) ARG.atributos ß id.atributos")
                 kwargs['Alpha'] = copy(id)  # (copia todos os atributos de id para os de ARG
                 
                 return kwargs["Alpha"]
@@ -257,7 +273,7 @@ class Semantic:
 
         # A -> CMD A
         def rule15(**kwargs):
-            
+            print("(semântico) -")
             return kwargs['Alpha']
         self.semantic_rules["15"] = rule15
 
@@ -272,6 +288,7 @@ class Semantic:
             if id["type"] is not "": 
                 # Realizar verificação do tipo entre os operandos id e LD
                 if id["type"] == LD["type"]:
+                    print("(semântico) Imprimir (id.lexema rcb.tipo LD.lexema)")
                     text = id["lexeme"] +" "+ self.map_type(rcb["lexeme"]) +" "+ LD["lexeme"] + ";"
                     self.code_insert(snippet=text, indent=True)
 
@@ -292,6 +309,8 @@ class Semantic:
 
             # Verificar se tipo dos operandos são equivalentes e diferentes de literal
             if OPRD1["type"] == OPRD2["type"] != "literal": 
+                print("(semântico) LD.lexema <- Tx")
+                print("(semântico) Imprimir (Tx = OPRD.lexema opm.tipo OPRD.lexema)")
                 self.Tx_count += 1
                 kwargs["Alpha"]["lexeme"] = "T"+str(self.Tx_count)
                 if OPRD1["type"]=="real" or OPRD2["type"]=="real":
@@ -309,6 +328,7 @@ class Semantic:
 
         # LD -> OPRD
         def rule18(**kwargs):
+            print("(semântico) LD.atributos <- OPRD.atributos")
             OPRD = kwargs['validation'].pop()
             kwargs['Alpha'] = copy(OPRD)
 
@@ -320,7 +340,8 @@ class Semantic:
             id = kwargs["validation"].pop()
 
             # Verificar se id foi declarado
-            if id["type"] is not "": 
+            if id["type"] is not "":
+                print("(semântico) OPRD.atributos <- id.atributos") 
                 kwargs["Alpha"] = copy(id)
 
                 return kwargs["Alpha"]
@@ -331,6 +352,7 @@ class Semantic:
 
         # OPRD -> num
         def rule20(**kwargs):
+            print("(semântico) OPRD.atributos <- num.atributos") 
             num = kwargs["validation"].pop()
 
             # Copiar todos os atributos de num para os atributos de OPRD
@@ -340,13 +362,14 @@ class Semantic:
 
         # A -> COND A
         def rule21(**kwargs):
-
+            print("(semântico) -") 
             return kwargs['Alpha']
         self.semantic_rules["21"] = rule21
 
         # COND -> CABEÇALHO	
         # CORPO
         def rule22(**kwargs):
+            print("(semântico) Imprimir ( } )")
             self.indent -= 1
             self.code_insert(snippet="}", indent=True)
 
@@ -356,6 +379,7 @@ class Semantic:
         # CABEÇALHO -> se
         # (EXP_R)	então
         def rule23(**kwargs):
+            print("(semântico) Imprimir ( if (EXP_R.lexema) { )")
             se = kwargs["validation"].pop()
             parenthesis = kwargs["validation"].pop()
             EXP_R = kwargs["validation"].pop()
@@ -378,6 +402,8 @@ class Semantic:
             # Verificar se os tipos de dados de OPRD são iguais ou equivalentes para a
             # realização de comparação relacional.
             if OPRD1["type"] in ("real","inteiro") and OPRD2["type"] in ("real","inteiro"):
+                print("(semântico) EXP_R.lexema <- Tx")
+                print("(semântico) Imprimir (Tx = OPRD.lexema opr.tipo OPRD.lexema)")
                 self.Tx_count += 1
                 kwargs["Alpha"]["lexeme"] = "T"+str(self.Tx_count)
                 text = "T{} = {} {} {};".format(self.Tx_count, OPRD1["lexeme"], opr["lexeme"], OPRD2["lexeme"])
@@ -389,33 +415,33 @@ class Semantic:
 
         # CORPO -> ES CORPO 
         def rule25(**kwargs):
-
+            print("(semântico) -")
             return kwargs['Alpha']
         self.semantic_rules["25"] = rule25
 
         # CORPO -> CMD	
         # CORPO
         def rule26(**kwargs):
-
+            print("(semântico) -")
             return kwargs['Alpha']
         self.semantic_rules["26"] = rule26
 
         # CORPO -> COND	
         # CORPO
         def rule27(**kwargs):
-
+            print("(semântico) -")
             return kwargs['Alpha']
         self.semantic_rules["27"] = rule27
 
         # CORPO -> fimse
         def rule28(**kwargs):
-
+            print("(semântico) -")
             return kwargs['Alpha']
         self.semantic_rules["28"] = rule28
 
         # A -> fim
         def rule29(**kwargs):
-
+            print("(semântico) -")
             return kwargs['Alpha']
         self.semantic_rules["29"] = rule29
 

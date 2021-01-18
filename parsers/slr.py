@@ -91,7 +91,9 @@ class SLR:
                 # ss = s  # seja s' (ss) o estado agora ao topo da pilha;
                 self.stack.append(A)  # empilhar A e em seguida desvio[s',A];
                 self.stack.append(self.goto[ss, A])
-
+                
+                print('(sintático) {} -> {}'.format(A,' '.join(β)))  # escrever a produção A -> β na tela;
+                
                 validation = []
                 for i in range(0, len(β)):
                     aux = semantic.aux_stack.pop()
@@ -104,7 +106,7 @@ class SLR:
 
 
                 semantic.aux_stack.append(non_terminal)
-                # print('{} -> {}'.format(A,' '.join(β)))  # escrever a produção A -> β na tela;
+
             elif self.action[s, a] == "acc":
                 if not syntactic_error:
                     print("Gerando PROGRAMA.c ...")
